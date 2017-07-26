@@ -258,7 +258,7 @@
     return modal;
   };
 
-  if ($.rails) {
+  if ($.rails || Rails) {
     /**
      * Attaches to Rails' UJS adapter's 'confirm' event, triggered on elements
      * having a `data-confirm` attribute set.
@@ -272,7 +272,7 @@
      * is briefly overriden, and afterwards reset when the modal is closed.
      *
      */
-    var rails_confirm = $.rails.confirm;
+    var rails_confirm = ($.rails) ? $.rails.confirm : Rails;
 
     $(document).delegate(settings.elements.join(', '), 'confirm', function() {
       var element = $(this), modal = getModal(element);
