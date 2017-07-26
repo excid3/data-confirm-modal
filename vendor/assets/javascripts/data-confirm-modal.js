@@ -35,6 +35,10 @@
    *
    */
 
+  var bootstrapVersion = function() {
+    return $.fn.modal.Constructor.VERSION[0];
+  }
+
   var defaults = {
     title: 'Are you sure?',
     commit: 'Confirm',
@@ -52,6 +56,47 @@
 
   var settings;
 
+  var versionSettings = {
+    "3": {
+      cancelClass: 'btn-default',
+      template: '<div id="{id}" class="modal {modalClass} {fade}" tabindex="-1" role="dialog" aria-labelledby="{id}Label" aria-hidden="true">' +
+                 '<div class="modal-dialog" role="document">' +
+                   '<div class="modal-content">' +
+                     '<div class="modal-header">' +
+                       '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
+                       '<h4 id="{id}Label" class="modal-title"></h4> ' +
+                     '</div>' +
+                     '<div class="modal-body"></div>' +
+                     '<div class="modal-footer">' +
+                       '<button class="btn cancel" data-dismiss="modal" aria-hidden="true"></button>' +
+                       '<button class="btn commit"></button>' +
+                     '</div>'+
+                   '</div>'+
+                 '</div>'+
+               '</div>',
+    },
+    "4": {
+      cancelClass: 'btn-secondary',
+      template: '<div id="{id}" class="modal {modalClass} {fade}" tabindex="-1" role="dialog" aria-labelledby="{id}Label" aria-hidden="true">' +
+                 '<div class="modal-dialog" role="document">' +
+                   '<div class="modal-content">' +
+                     '<div class="modal-header">' +
+                       '<h4 id="{id}Label" class="modal-title"></h4> ' +
+                       '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                         '<span aria-hidden="true">&times;</span>' +
+                       '</button>' +
+                     '</div>' +
+                     '<div class="modal-body"></div>' +
+                     '<div class="modal-footer">' +
+                       '<button class="btn cancel" data-dismiss="modal" aria-hidden="true"></button>' +
+                       '<button class="btn commit"></button>' +
+                     '</div>'+
+                   '</div>'+
+                 '</div>'+
+               '</div>'
+    }
+  };
+
   window.dataConfirmModal = {
     setDefaults: function (newSettings) {
       settings = $.extend(settings, newSettings);
@@ -59,6 +104,7 @@
 
     restoreDefaults: function () {
       settings = $.extend({}, defaults);
+      settings = $.extend(settings, versionSettings[bootstrapVersion()]);
     },
 
     confirm: function (options) {
@@ -127,23 +173,13 @@
     var fade = settings.fade ? 'fade' : '';
     var modalClass = options.modalClass ? options.modalClass : settings.modalClass;
 
-    var modal = $(
-      '<div id="'+id+'" class="modal '+modalClass+' '+fade+'" tabindex="-1" role="dialog" aria-labelledby="'+id+'Label" aria-hidden="true">' +
-        '<div class="modal-dialog">' +
-          '<div class="modal-content">' +
-            '<div class="modal-header">' +
-              '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
-              '<h4 id="'+id+'Label" class="modal-title"></h4> ' +
-            '</div>' +
-            '<div class="modal-body"></div>' +
-            '<div class="modal-footer">' +
-              '<button class="btn cancel" data-dismiss="modal" aria-hidden="true"></button>' +
-              '<button class="btn commit"></button>' +
-            '</div>'+
-          '</div>'+
-        '</div>'+
-      '</div>'
-    );
+    // Replace placeholders in modal templates
+    var template = settings.template;
+    template = template.replace(/{id}/g, id);
+    template = template.replace(/{fade}/g, fade);
+    template = template.replace(/{modalClass}/g, modalClass);
+
+    var modal = $(template);
 
     // Make sure it's always the top zindex
     var highest = current = settings.zIndex;
